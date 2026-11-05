@@ -120,10 +120,7 @@ PORT=5000
 # Database
 MONGODB_URI=mongodb+srv://<username>:<password>@<cluster>.mongodb.net/<db-name>
 
-# Auth (must match what the client uses to issue tokens)
-BETTER_AUTH_SECRET=your_long_random_secret
-
-# CORS
+# Client origin for CORS and Better Auth JWKS
 CLIENT_URL=http://localhost:3000
 ```
 
@@ -131,8 +128,7 @@ CLIENT_URL=http://localhost:3000
 | --- | :---: | --- |
 | `PORT` | ➖ | Port to run the server on (defaults to `5000` locally) |
 | `MONGODB_URI` | ✅ | MongoDB connection string |
-| `BETTER_AUTH_SECRET` | ✅ | Secret shared with the client for verifying JWTs |
-| `CLIENT_URL` | ✅ | Front-end origin used for auth JWKS and allowed by CORS. Set this to the deployed client URL; `https://neighbournest-eight.vercel.app` is also allowed. |
+| `CLIENT_URL` | ✅ | Front-end origin used to fetch Better Auth's public JWKS and for CORS. Set this to the deployed client URL without a trailing slash, e.g. `https://neighbournest-eight.vercel.app`. |
 
 > ⚠️ Adjust the variable names to match the ones read in `src/`. Never commit your `.env` file — it is already listed in `.gitignore`.
 
@@ -292,7 +288,7 @@ The server is configured for **Vercel** through `vercel.json`.
 
 1. Push the repository to GitHub.
 2. Import the repo in [Vercel](https://vercel.com/new).
-3. Add `MONGODB_URI`, `BETTER_AUTH_SECRET` and `CLIENT_URL` under **Settings → Environment Variables**. Set `CLIENT_URL` to the deployed client origin exactly (for example, `https://neighbournest-eight.vercel.app`, without a trailing slash).
+3. Add `MONGODB_URI` and `CLIENT_URL` under **Settings → Environment Variables**. Set `CLIENT_URL` to the deployed client origin exactly (for example, `https://neighbournest-eight.vercel.app`, without a trailing slash).
 4. In MongoDB Atlas, allow Vercel's IPs (**Network Access → `0.0.0.0/0`** for serverless).
 5. Deploy, then set the resulting URL as `NEXT_PUBLIC_API_URL` in the client project.
 
