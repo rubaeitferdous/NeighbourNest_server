@@ -1,33 +1,14 @@
-import "dotenv/config";
 import { MongoClient } from "mongodb";
-
-let client;
-let connectionPromise;
-
-export async function connectDB() {
-  const uri = process.env.MONGODB_URI;
-
-  if (!uri) {
-    throw new Error("MONGODB_URI is not configured");
+const client = new MongoClient(process.env.MONGODB_URI);
+let db;
+// Cached connection: safe for serverless hosting where the file may re-run.
+export async function getDb() {
+  if (!db) {
+    await client.connect();
+    db = client.db("communityEvents");
+    await db
+      .collection("joinedEvents")
+      .createIndex({ eventId: 1, userEmail: 1 }, { unique: true });
   }
-
-  if (!connectionPromise) {
-    const options = {};
-    const username = process.env.MONGODB_USERNAME;
-    const password = process.env.MONGODB_PASSWORD;
-
-    if (username && password) {
-      options.auth = { username, password };
-    }
-
-    client = new MongoClient(uri, options);
-    connectionPromise = client.connect().catch((error) => {
-      client = undefined;
-      connectionPromise = undefined;
-      throw error;
-    });
-  }
-
-  const connectedClient = await connectionPromise;
-  return connectedClient.db();
+  return db;
 }

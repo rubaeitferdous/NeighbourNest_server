@@ -1,18 +1,15 @@
 import { Router } from "express";
-import { connectDB } from "../config/db.js";
+import { getDb } from "../config/db.js";
 import { verifyJWT } from "../middleware/verifyJWT.js";
-
 const router = Router();
-
-router.get("/", verifyJWT, async (request, response) => {
-  const db = await connectDB();
-  const events = await db
+// GET /joined -> my joined events sorted by event date
+router.get("/", verifyJWT, async (req, res) => {
+  const db = await getDb();
+  const joined = await db
     .collection("joinedEvents")
-    .find({ userEmail: request.user.email })
+    .find({ userEmail: req.user.email })
     .sort({ eventDate: 1 })
     .toArray();
-
-  return response.json(events);
+  res.json(joined);
 });
-
 export default router;
