@@ -4,7 +4,16 @@ import cors from "cors";
 import eventsRoutes from "./routes/events.routes.js";
 import joinedRoutes from "./routes/joined.routes.js";
 const app = express();
-app.use(cors({ origin: process.env.CLIENT_URL })); // no trailing slash
+const allowedOrigins = new Set(
+  [process.env.CLIENT_URL, "https://neighbournest-eight.vercel.app"]
+    .filter(Boolean)
+    .map((origin) => origin.replace(/\/+$/, ""))
+);
+app.use(cors({
+  origin(origin, callback) {
+    callback(null, !origin || allowedOrigins.has(origin.replace(/\/+$/, "")));
+  },
+}));
 app.use(express.json());
 app.get("/", (req, res) => res.send("Community Events API is running"));
 app.use("/events", eventsRoutes);
